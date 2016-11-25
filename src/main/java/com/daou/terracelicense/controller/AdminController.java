@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -22,9 +19,21 @@ public class AdminController {
     @Autowired
     private AdminMapper adminMapper;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
-    public ModelAndView loginPage(){
-        ModelAndView mav = new ModelAndView("login");
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public ModelAndView loginPage(@RequestParam(value = "error",required = false) String error,
+                                  @RequestParam(value = "logout",	required = false) String logout){
+        ModelAndView mav = new ModelAndView();
+        if (error != null) {
+            mav.addObject("error", "Invalid Credentials provided.");
+        }
+
+        if (logout != null) {
+            mav.addObject("message", "Logged out successfully.");
+            mav.setViewName("/");
+            return mav;
+        }
+
+        mav.setViewName("login");
         return mav;
     }
 
@@ -35,7 +44,7 @@ public class AdminController {
      * @return result message
      */
     @ResponseBody
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login/ex", method = RequestMethod.POST)
     public Response login(@ModelAttribute Admin admin){
         Admin result;
         String id = admin.getId();

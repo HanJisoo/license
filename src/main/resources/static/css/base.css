@@ -2,20 +2,23 @@ html{
 
 }
 .lc-width-23{
-    width:23px;
+    width:23px !important;
 }
 .lc-width-230{
-    width:184px;
+    width:184px !important;
 }
 .lc-width-250{
-    width:250px;
+    width:250px !important;
 }
 .lc-margin-right-25{
-    margin-right:25px;
+    margin-right:25px !important;
 }
 .lc-text-color-light-blue{
-    color: #778899;
+    color: #778899 !important;
+}
+.lc-font-size-8{
+    font-size:0.8em !important;
 }
 .lc-font-size-15{
-    font-size:1.5em;
+    font-size:1.5em !important;
 }

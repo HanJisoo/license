@@ -1,11 +1,18 @@
 package com.daou.terracelicense.domain;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Created by user on 2016-11-24.
  */
-public class Admin implements Serializable{
+public class Admin implements UserDetails{
     private String id;
     private String password;
     private String name;
@@ -16,6 +23,47 @@ public class Admin implements Serializable{
     private String country;
     private String createDate;
     private String note;
+    private SimpleGrantedAuthority authority;
+
+    public void setAuthority(SimpleGrantedAuthority authority) {
+        this.authority = authority;
+    }
+
+    public SimpleGrantedAuthority getAuthority() {
+        return authority;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(this.getAuthority());
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getId();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 
     public Admin(String id, String password, String name, String email, String telephone, String fax, String homepage, String country, String createDate, String note) {
         this.id = id;
@@ -28,6 +76,9 @@ public class Admin implements Serializable{
         this.country = country;
         this.createDate = createDate;
         this.note = note;
+    }
+
+    public Admin() {
     }
 
     public String getId() {
