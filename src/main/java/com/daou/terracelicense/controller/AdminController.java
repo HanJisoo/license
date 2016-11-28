@@ -33,7 +33,7 @@ public class AdminController {
             return mav;
         }
 
-        mav.setViewName("login");
+        mav.setViewName("header");
         return mav;
     }
 
