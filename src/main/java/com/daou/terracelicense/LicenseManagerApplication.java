@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class LicenseManagerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LicenseManagerApplication.class, args);
-		DataBaseMigration dbm = new DataBaseMigration();
-		dbm.setPartTable();
+		/*DataBaseMigration dbm = new DataBaseMigration();
+		dbm.setPartTable();*/
 	}
 }
