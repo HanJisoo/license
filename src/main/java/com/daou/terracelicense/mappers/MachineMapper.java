@@ -15,8 +15,11 @@ public interface MachineMapper {
      * MachineMapper-01
      * Get Machine List
      */
-    @Select("SELECT *" +
-            "FROM Machine "
+    @Select("SELECT * " +
+            "FROM machine " +
+            "ORDER BY createdate " +
+            "LIMIT #{limit} " +
+            "OFFSET #{limit}"
             )
     public List<Machine> getMachineList(
             @Param("offset") int offset,

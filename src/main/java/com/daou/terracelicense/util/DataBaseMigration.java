@@ -16,33 +16,41 @@ public class DataBaseMigration {
 
     public void getInitSetting() {
         try {
-            Class.forName(driver);
+            Class.forName(pgDriver);
             Class.forName(pgDriver);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
         try {
-            if (mysqlConn == null) {
+            /*if (mysqlConn == null) {
                 mysqlConn = DriverManager.getConnection("jdbc:mysql://27.102.82.128:3306/license", "mailadm", "secret");
             }
 
             if (pgsqlConn == null) {
                 pgsqlConn = DriverManager.getConnection("jdbc:postgresql://27.102.82.218:5432/license", "postgres", "apdlf!@");
+            }*/
+
+            if (mysqlConn == null) {
+                mysqlConn = DriverManager.getConnection("jdbc:postgresql://27.102.82.218:5432/license", "postgres", "apdlf!@");
+            }
+
+            if (pgsqlConn == null) {
+                pgsqlConn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/license", "postgres", "apdlf!@");
             }
 
             pgsqlConn.setAutoCommit(false);//비활성화
 
             if (mysqlConn != null) {
-                System.out.println("MYSQL Connect Success!");
+                System.out.println("Remote Connect Success!");
             } else {
-                System.out.println("MYSQL Connect Fail!");
+                System.out.println("Remote Connect Fail!");
             }
 
             if (pgsqlConn != null) {
-                System.out.println("PostgreSQL Connect Success!");
+                System.out.println("Local Connect Success!");
             } else {
-                System.out.println("PostgreSQL Connect Fail!");
+                System.out.println("Local Connect Fail!");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -122,7 +130,7 @@ public class DataBaseMigration {
             int max;// = 113;	//select count(no) from License; query reslut!
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from Admin");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from admin");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -158,7 +166,7 @@ public class DataBaseMigration {
         try {
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from CodeControl");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from codecontrol");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -190,7 +198,7 @@ public class DataBaseMigration {
         try {
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from PartnerGroup");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from partnergroup");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -227,7 +235,7 @@ public class DataBaseMigration {
         try {
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from Client");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from client");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -264,7 +272,7 @@ public class DataBaseMigration {
         try {
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from Grade");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from grade");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -295,7 +303,7 @@ public class DataBaseMigration {
         try {
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from Part");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from part");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -335,7 +343,7 @@ public class DataBaseMigration {
         try {
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from Machine");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from machine");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -410,18 +418,19 @@ public class DataBaseMigration {
         try {
             int count = 0;
 
-            mysqlPsmt = mysqlConn.prepareStatement("select * from (select * from MachineState order by inputDate desc) m group by m.serialKey");
+            //mysqlPsmt = mysqlConn.prepareStatement("select * from (select * from MachineState order by inputDate desc) m group by m.serialKey");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from machinestate");
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
                 try {
                     pgsqlPsmt = pgsqlConn.prepareStatement("insert into machinestate values(?, ?, ?, ?, ?, ?)");
-                    pgsqlPsmt.setString(1, rs.getString(2));
-                    pgsqlPsmt.setString(2, rs.getString(3));
-                    pgsqlPsmt.setString(3, rs.getString(4));
-                    pgsqlPsmt.setString(4, rs.getString(5));
-                    pgsqlPsmt.setString(5, rs.getString(6));
-                    pgsqlPsmt.setString(6, rs.getString(7));
+                    pgsqlPsmt.setString(1, rs.getString(1));
+                    pgsqlPsmt.setString(2, rs.getString(2));
+                    pgsqlPsmt.setString(3, rs.getString(3));
+                    pgsqlPsmt.setString(4, rs.getString(4));
+                    pgsqlPsmt.setString(5, rs.getString(5));
+                    pgsqlPsmt.setString(6, rs.getString(6));
                     int j = pgsqlPsmt.executeUpdate();
                     count = count + j;
                 } catch (Exception e) {
@@ -513,6 +522,42 @@ public class DataBaseMigration {
                 pgsqlConn.commit();
             }
 
+            //System.out.println("line : " + count);
+        } catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            closeConnection();
+        }
+    }
+
+    public void setLicenseTableForLocal() {
+        getInitSetting();
+        try {
+            int count = 0;
+            mysqlPsmt = mysqlConn.prepareStatement("select * from license");
+            rs = mysqlPsmt.executeQuery();
+
+            while(rs.next()) {
+                System.out.println("Insert start - line : " + count++);
+                try {
+                    pgsqlPsmt = pgsqlConn.prepareStatement("insert into license values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    pgsqlPsmt.setInt(1, rs.getInt(1));
+                    pgsqlPsmt.setString(2, rs.getString(2));
+                    pgsqlPsmt.setString(3, rs.getString(3));
+                    pgsqlPsmt.setString(4, rs.getString(4));
+                    pgsqlPsmt.setString(5, rs.getString(5));
+                    pgsqlPsmt.setString(6, rs.getString(6));
+                    pgsqlPsmt.setString(7, rs.getString(7));
+                    pgsqlPsmt.setBinaryStream(8, rs.getBinaryStream(8));
+                    pgsqlPsmt.setString(9, rs.getString(9));
+                    pgsqlPsmt.setString(10, rs.getString(10));
+                    pgsqlPsmt.executeUpdate();
+                } catch(Exception e) {
+                    System.out.println("ERR - line : " + count);
+                    e.printStackTrace();
+                }
+            }
+            pgsqlConn.commit();
             //System.out.println("line : " + count);
         } catch(Exception e){
             e.printStackTrace();

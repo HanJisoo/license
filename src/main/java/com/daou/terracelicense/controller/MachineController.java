@@ -1,6 +1,7 @@
 package com.daou.terracelicense.controller;
 
 import com.daou.terracelicense.domain.Machine;
+import com.daou.terracelicense.domain.MachineList;
 import com.daou.terracelicense.mappers.MachineMapper;
 import com.daou.terracelicense.service.MachineService;
 import com.daou.terracelicense.util.PageManager;
@@ -31,10 +32,11 @@ public class MachineController {
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public ModelAndView getMachineView(Model model){
-        List<Machine> machineList = new ArrayList<>();
-        //testCode(machineList);
+        List<Machine> list = new ArrayList<>();
+        MachineList machineList = new MachineList();
         try{
-            machineList = machineService.getMachineList("1");
+            list = machineService.getMachineList("1");
+            machineList.setMachineList(list);
         }catch (Exception e){
             logger.error(ExceptionUtils.getStackTrace(e));
         }
@@ -93,10 +95,4 @@ public class MachineController {
         }
         return result;
     }*/
-
-    private void testCode(List<Machine> l){
-        for(int i = 0; i < 20; i++){
-            l.add(new Machine("serial!!!" + i, "susccess!!!"));
-        }
-    }
 }

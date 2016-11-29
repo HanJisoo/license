@@ -19,33 +19,36 @@
             <div class="uk-overflow-container" id="table_area">
                 <table class="uk-table uk-table-middle" id="item_table">
                     <colgroup>
-                        <col style="width:12.5%"/>
-                        <col style="width:12.5%"/>
-                        <col style="width:12.5%"/>
-                        <col style="width:12.5%"/>
-                        <col style="width:12.5%"/>
-                        <col style="width:12.5%"/>
-                        <col style="width:12.5%"/>
-                        <col style="width:12.5%"/>
+                        <col style="width:5%"/>
+                        <col style="width:20%"/>
+                        <col style="width:16%"/>
+                        <col style="width:10%"/>
+                        <col style="width:10%"/>
+                        <col style="width:9%"/>
+                        <col style="width:10%"/>
+                        <col style="width:10%"/>
+                        <col style="width:10%"/>
                     </colgroup>
                     <thead>
                     <tr>
+                        <th class="uk-text-middle uk-text-center">No</th>
                         <th class="uk-text-middle uk-text-center">SerialKey</th>
-                        <th class="uk-text-middle uk-text-center">HostID</th>
+                        <th class="uk-text-middle uk-text-center">Customer</th>
                         <th class="uk-text-middle uk-text-center">Status</th>
                         <th class="uk-text-middle uk-text-center">Partner</th>
-                        <th class="uk-text-middle uk-text-center">Customer</th>
                         <th class="uk-text-middle uk-text-center">Country</th>
                         <th class="uk-text-middle uk-text-center">Model</th>
                         <th class="uk-text-middle uk-text-center">ExpireDate</th>
+                        <th class="uk-text-middle uk-text-center">Down</th>
                     </tr>
                     </thead>
                     <tbody id="item_list">
                     </tbody>
                 </table>
-                <div id="loading" class="uk-text-center">
+                <div id="loading" class="uk-text-center uk-margin-small-bottom">
                     <i class="uk-icon-spinner uk-icon-spin "></i>
                 </div>
+                <ul id="pagination" class="uk-pagination"></ul>
             </div>
         </li>
         <li>
@@ -69,9 +72,27 @@
         machineList = /*[[${machineList}]]*/ null;
         if(machineList != null){
             addRow(machineList);
+            pagination(machineList);
         }else{
             $("#nodata").removeClass("uk-hidden");
             $("#nextBtn").hide();
+        }
+
+        function pagination(data){
+            var curIndex = data.currentIndexPage;
+            var size = data.endPage - data.startPage + 1;
+            var appendStr = "";
+
+            for(var i = 0; i < size; i++){
+                var index = data.startPage + i;
+                if(index == curIndex){
+                    appendStr = appendStr + "<li class='uk-active'><span>" + index + "</span></li>";
+                }else{
+                    appendStr = appendStr + "<li><a href='#'>" + index + "</a></li>";
+                }
+            }
+
+            $('#pagination').html(appendStr);
         }
 
         function getList(){
@@ -97,17 +118,18 @@
             $("#nextBtn").hide();
             $("#loading").removeClass("uk-active");
             var list='';
-            $.each(data, function(i, item){
+            $.each(data.machineList, function(i, item){
                 with(item){
                     list+="<tr>"+
-                            "<td class='uk-text-center'>"+serialKey+"</td>"+
-                            "<td class='uk-text-center'>"+testStr+"</td>"+
-                            "<td class='uk-text-center'>"+serialKey+"</td>"+
-                            "<td class='uk-text-center'>"+testStr+"</td>"+
-                            "<td class='uk-text-center'>"+serialKey+"</td>"+
-                            "<td class='uk-text-center'>"+testStr+"</td>"+
-                            "<td class='uk-text-center'>"+serialKey+"</td>"+
-                            "<td class='uk-text-center'>"+testStr+"</td>"+
+                            "<td class='uk-text-center'>" + "1" + "</td>"+
+                            "<td class='uk-text-center'>" + serialKey + "</td>"+
+                            "<td class='uk-text-center'>" + clientCompanyName + "</td>"+
+                            "<td class='uk-text-center'>" + stateValue + "</td>"+
+                            "<td class='uk-text-center'>" + adminCompanyName + "</td>"+
+                            "<td class='uk-text-center'>" + countryValue + "</td>"+
+                            "<td class='uk-text-center'>" + modelValue + "</td>"+
+                            "<td class='uk-text-center'>" + licenseEndDate + "</td>"+
+                            "<td class='uk-text-center'>" + "down" + "</td>" +
                             '</tr>';
                 }
             });
