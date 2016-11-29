@@ -9,6 +9,6 @@ public class LicenseManagerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(LicenseManagerApplication.class, args);
 		/*DataBaseMigration dbm = new DataBaseMigration();
-		dbm.setPartTable();*/
+		dbm.setLicenseTable();*/
 	}
 }

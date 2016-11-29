@@ -29,17 +29,17 @@ public class MachineController {
     @Autowired
     private MachineService machineService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/view", method = RequestMethod.GET)
     public ModelAndView getMachineView(Model model){
         List<Machine> machineList = new ArrayList<>();
+        //testCode(machineList);
         try{
             machineList = machineService.getMachineList("1");
         }catch (Exception e){
             logger.error(ExceptionUtils.getStackTrace(e));
         }
-        ModelAndView mav = new ModelAndView("machine", model.asMap());
+        ModelAndView mav = new ModelAndView("machine/list", model.asMap());
         mav.addObject("machineList", machineList);
-
         return mav;
     }
 
@@ -93,4 +93,10 @@ public class MachineController {
         }
         return result;
     }*/
+
+    private void testCode(List<Machine> l){
+        for(int i = 0; i < 20; i++){
+            l.add(new Machine("serial!!!" + i, "susccess!!!"));
+        }
+    }
 }
