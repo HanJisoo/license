@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by user on 2016-11-26.
@@ -32,11 +34,9 @@ public class MachineController {
 
     @RequestMapping(value = "/view", method = RequestMethod.GET)
     public ModelAndView getMachineView(Model model){
-        List<Machine> list = new ArrayList<>();
         MachineList machineList = new MachineList();
         try{
-            list = machineService.getMachineList("1");
-            machineList.setMachineList(list);
+            machineList = machineService.getMachineList("1");
         }catch (Exception e){
             logger.error(ExceptionUtils.getStackTrace(e));
         }
@@ -47,8 +47,8 @@ public class MachineController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
-    public List<Machine> getMachineList(@RequestParam(value = "page", defaultValue = "1") String page){
-        List<Machine> machineList = new ArrayList<>();
+    public MachineList getMachineList(@RequestParam(value = "page", defaultValue = "1") String page){
+        MachineList machineList = new MachineList();
         try{
             machineList = machineService.getMachineList(page);
         }catch (Exception e){

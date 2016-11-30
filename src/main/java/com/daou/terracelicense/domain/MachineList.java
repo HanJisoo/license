@@ -22,11 +22,19 @@ public class MachineList implements Serializable{
     private String sortItem;
     private String user;
     private List<Machine> machineList;
+    private List<Admin> adminCompanyAll;
 
     public MachineList() {
-        this.currentIndexPage = 1;
         this.endPage = 10;
         this.startPage = 1;
+    }
+
+    public List<Admin> getAdminCompanyAll() {
+        return adminCompanyAll;
+    }
+
+    public void setAdminCompanyAll(List<Admin> adminCompanyAll) {
+        this.adminCompanyAll = adminCompanyAll;
     }
 
     public int getCurrentPage() {
