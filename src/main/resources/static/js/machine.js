@@ -140,7 +140,7 @@ function addOptionByCategory(category, codeControlList){
     $.each(list, function(i, item){
         with(item){
             var num = i + 2;
-            html+= "<option value='" + num + "'>" + value + "</option>";
+            html+= "<option value='" + code + "'>" + value + "</option>";
         }
     });
 

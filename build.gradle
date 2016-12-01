@@ -10,6 +10,7 @@ buildscript {
 	}
 }
 
+//apply plugin: 'war'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
@@ -35,4 +36,5 @@ dependencies {
 	compile('org.apache.commons:commons-lang3:3.4')
 	runtime('org.postgresql:postgresql')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
+	//providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 }
