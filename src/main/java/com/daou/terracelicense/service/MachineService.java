@@ -9,7 +9,7 @@ import com.daou.terracelicense.mappers.ClientMapper;
 import com.daou.terracelicense.mappers.CodeControlMapper;
 import com.daou.terracelicense.mappers.MachineMapper;
 import com.daou.terracelicense.util.BaseUtil;
-import com.daou.terracelicense.util.CodeControlManager;
+import com.daou.terracelicense.util.CodeControlConst;
 import com.daou.terracelicense.util.MachineManager;
 import com.daou.terracelicense.util.PageManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,9 @@ public class MachineService {
     @Autowired
     private ClientMapper clientMapper;
 
-    public MachineList getMachineList(String page) throws Exception{
+    public MachineList getMachineList(String page, String sortType) throws Exception{
         MachineList machineList = new MachineList();
-        CodeControlList codeControlList = new CodeControlList();
+        MachineManager manager = MachineManager.getInstance();
         List<Machine> machines;
         List<CodeControl> codeControls;
 
@@ -43,7 +43,7 @@ public class MachineService {
         int machineCount;
 
         machineCount = machineMapper.getMachineCount();     // All Machine Count for pagination
-        machines = machineMapper.getMachineList(offset, limit);
+        machines = machineMapper.getMachineList(offset, limit, sortType);
         codeControls = codeControlMapper.getAllCodeControl();
 
         machineList.setMachineList(machines);
@@ -52,7 +52,7 @@ public class MachineService {
         machineList.setCurrentIndexPage(Integer.parseInt(page));    // Current Seleced Page
         ///// About Machine Info
         setNameAndValueFromIdAndCode(machineList, codeControls);
-        MachineManager.setMachineNo(machineList);
+        manager.setMachineNo(machineList);
 
         return machineList;
     }
@@ -62,14 +62,14 @@ public class MachineService {
         List<CodeControl> modelAll, countryAll, stateAll, prefixAll, producerAll, deviceAll, programAll, virusAll;
         List<Machine> serialNumberAll, clientCompanyAll, adminCompanyAll;
 
-        countryAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_COUNTRY);
-        stateAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_MACHINESTATE);
-        modelAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_MODEL);
-        prefixAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_PREFIX);
-        producerAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_PRODUCER);
-        deviceAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_THIRDDEVICE);
-        programAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_THIRDPROGRAM);
-        virusAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_VIRUS);
+        countryAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_COUNTRY);
+        stateAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_MACHINESTATE);
+        modelAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_MODEL);
+        prefixAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_PREFIX);
+        producerAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_PRODUCER);
+        deviceAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_THIRDDEVICE);
+        programAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_THIRDPROGRAM);
+        virusAll = codeControlMapper.getAllByCategory(CodeControlConst.CODE_CATEGORY_VIRUS);
         serialNumberAll = getSerialInfo(modelAll);
         clientCompanyAll = clientMapper.getClientCompanyList();
         adminCompanyAll = adminMapper.getAdminCompanyList();
@@ -136,22 +136,19 @@ public class MachineService {
                 machine.setClientCompanyName("");
             }
             if(!BaseUtil.stringNullOrEmpty(countryCode)){
-                //countryVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_COUNTRY, countryCode);
-                countryVal = getValueByCode(codeControlList, CodeControlManager.CODE_CATEGORY_COUNTRY, countryCode);
+                countryVal = getValueByCode(codeControlList, CodeControlConst.CODE_CATEGORY_COUNTRY, countryCode);
                 machine.setCountryValue(countryVal);
             }else{
                 machine.setCountryValue("");
             }
             if(!BaseUtil.stringNullOrEmpty(modelCode)){
-                //modelVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_MODEL, modelCode);
-                modelVal = getValueByCode(codeControlList, CodeControlManager.CODE_CATEGORY_MODEL, modelCode);
+                modelVal = getValueByCode(codeControlList, CodeControlConst.CODE_CATEGORY_MODEL, modelCode);
                 machine.setModelValue(modelVal);
             }else{
                 machine.setModelValue("");
             }
             if(!BaseUtil.stringNullOrEmpty(stateCode)){
-                //stateVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_MACHINESTATE, stateCode);
-                stateVal = getValueByCode(codeControlList, CodeControlManager.CODE_CATEGORY_MACHINESTATE, stateCode);
+                stateVal = getValueByCode(codeControlList, CodeControlConst.CODE_CATEGORY_MACHINESTATE, stateCode);
                 machine.setStateValue(stateVal);
             }else{
                 machine.setStateValue("");
@@ -163,6 +160,7 @@ public class MachineService {
         String serialKey;
         String snDefault = "000A-001";
         List<Machine> serialNumberAll = new ArrayList<>();
+        MachineManager manager = MachineManager.getInstance();
 
         for(CodeControl modelCodeCon : modelAll){
             Machine machine = new Machine();
@@ -171,7 +169,7 @@ public class MachineService {
             serialKey = machineMapper.getMaxSerialKey(modelCodeCon.getCode());
 
             if (!serialKey.equals("noSerialKey") && serialKey.substring(0, 6).equals(modelValue)) {
-                String sn = MachineManager.serialKeyAutoIncrement(serialKey);
+                String sn = manager.serialKeyAutoIncrement(serialKey);
                 machine.setModelValue(modelValue);
                 machine.setSerialNumber(sn);
                 machine.setSerialKey(modelValue + sn);
@@ -182,11 +180,6 @@ public class MachineService {
             }
             serialNumberAll.add(machine);
         }
-
         return serialNumberAll;
     }
-
-    /*
-        public int deleteMachine(String id) throws Exception{
-    }*/
 }

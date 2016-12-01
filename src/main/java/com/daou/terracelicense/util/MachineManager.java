@@ -10,7 +10,16 @@ import java.util.StringTokenizer;
  * Created by user on 2016-11-30.
  */
 public class MachineManager {
-    public static void setMachineNo(MachineList machineList){
+    private static MachineManager machineManager;
+
+    public static MachineManager getInstance(){
+        if(machineManager == null){
+            machineManager = new MachineManager();
+        }
+        return machineManager;
+    }
+
+    public void setMachineNo(MachineList machineList){
         ArrayList<Machine> list = (ArrayList)machineList.getMachineList();
         int machineCount = machineList.getMaxIndexNo();
         int currentIndex = machineList.getCurrentIndexPage();
@@ -21,7 +30,7 @@ public class MachineManager {
         }
     }
 
-    public static String serialKeyAutoIncrement(String sn) {
+    public String serialKeyAutoIncrement(String sn) {
         StringTokenizer st = new StringTokenizer(sn, "-");
         String firstSn = st.nextToken(); //first
         firstSn = firstSn.substring(6);

@@ -27,17 +27,23 @@ import java.util.Map;
 @Controller
 @RequestMapping(value = "/machine")
 public class MachineController {
-
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private MachineService machineService;
 
+    private final String INIT_PAGE = "1";
+    private final String INIT_SORT_TYPE = "createdate";
+
+    /**
+     * Machine-Controller-01
+     * Get Machine List View
+     */
     @RequestMapping(value = "/view/list", method = RequestMethod.GET)
     public ModelAndView getMachineListView(Model model){
         MachineList machineList = new MachineList();
         try{
-            machineList = machineService.getMachineList("1");
+            machineList = machineService.getMachineList(INIT_PAGE, INIT_SORT_TYPE);
         }catch (Exception e){
             logger.error(ExceptionUtils.getStackTrace(e));
         }
@@ -46,6 +52,10 @@ public class MachineController {
         return mav;
     }
 
+    /**
+     * Machine-Controller-02
+     * Get Machine Add View
+     */
     @RequestMapping(value = "/view/add", method = RequestMethod.GET)
     public ModelAndView getMachineAddView(Model model){
         CodeControlList codeControlList = new CodeControlList();
@@ -59,12 +69,16 @@ public class MachineController {
         return mav;
     }
 
+    /**
+     * Machine-Controller-03
+     * Get Machine List Data
+     */
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseBody
-    public MachineList getMachineList(@RequestParam(value = "page", defaultValue = "1") String page){
+    public MachineList getMachineList(@RequestParam(value = "page", defaultValue = "1") String page, @RequestParam(value = "sortType", defaultValue = "createdate") String sortType){
         MachineList machineList = new MachineList();
         try{
-            machineList = machineService.getMachineList(page);
+            machineList = machineService.getMachineList(page, sortType);
         }catch (Exception e){
             logger.error(ExceptionUtils.getStackTrace(e));
         }
@@ -72,6 +86,10 @@ public class MachineController {
         return machineList;
     }
 
+    /**
+     * Machine-Controller-04
+     * Add Machine
+     */
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     @ResponseBody
     public int addMachine(@RequestBody Machine machine) {
@@ -84,6 +102,10 @@ public class MachineController {
         return result;
     }
 
+    /**
+     * Machine-Controller-05
+     * Update Machine
+     */
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     @ResponseBody
     public int updateMachine(@RequestBody Machine machine) {
@@ -96,17 +118,4 @@ public class MachineController {
 
         return result;
     }
-
-    /*@RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    @ResponseBody
-    public int deleteMachine(@PathVariable(value = "id") String id) {
-
-        int result = 0;
-        try {
-            result = machineService.deleteArticle(id);
-        } catch (Exception e) {
-            logger.error(ExceptionUtils.getStackTrace(e));
-        }
-        return result;
-    }*/
 }

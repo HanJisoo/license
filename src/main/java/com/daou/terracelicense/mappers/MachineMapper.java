@@ -33,7 +33,8 @@ public interface MachineMapper {
     @Select(GET_MACHINE_LIST_QUERY)
     public List<Machine> getMachineList(
             @Param("offset") int offset,
-            @Param("limit") int limit) throws Exception;
+            @Param("limit") int limit,
+            @Param("sortType") String sortType) throws Exception;
 
     /**
      * MachineMapper-02

@@ -27,9 +27,6 @@ import java.util.EnumSet;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
-    @Autowired
-    private AdminService adminService;
-
    @Override
     public void configure(WebSecurity web) throws Exception {
         web
@@ -45,8 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         http
             .csrf().disable()
             .authorizeRequests()
-                .antMatchers("/static/**").permitAll()
-                .antMatchers("/").authenticated()
+                .anyRequest().permitAll()
                 .and()
             .formLogin()
                 .loginPage("/login")
@@ -55,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(adminService);
+        //auth.userDetailsService(adminService);
     }
 
     @Autowired
@@ -69,18 +65,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-    /**
-     * about security error
-     *
-     * @param springSecurityFilterChain
-     * @return
-     */
-    /*@Bean
-    public FilterRegistrationBean getSpringSecurityFilterChainBindedToError(@Qualifier("springSecurityFilterChain") Filter springSecurityFilterChain) {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(springSecurityFilterChain);
-        registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-        return registration;
-    }*/
 }

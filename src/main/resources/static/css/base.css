@@ -1,6 +1,3 @@
-html{
-
-}
 .lc-width-23{
     width:23px !important;
 }
@@ -21,4 +18,7 @@ html{
 }
 .lc-font-size-15{
     font-size:1.5em !important;
+}
+.lc-display-none{
+    display:none !important;
 }

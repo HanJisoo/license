@@ -14,6 +14,6 @@ public class MainController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String loginPage(){
         //ModelAndView mav = new ModelAndView("login");
-        return "index";
+        return "header";
     }
 }
