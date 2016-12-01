@@ -14,12 +14,13 @@ public interface MachineMapper {
 
     String GET_MACHINE_LIST_QUERY = "SELECT m.serialkey, m.serialnumber, m.hostid, m.country AS countryCode, coalesce(m.admincompany,'noData') AS adminCompanyId, coalesce(m.clientcompany,'noData') AS clientCompanyId, m.model, m.password, s.state AS stateCode, s.grade , l.licenseenddate, s.inputdate , m.appliancetype, m.createdate " +
                                     "FROM machine m " +
-                                    "LEFT JOIN machinestate s ON m.serialkey = s.serialkey " +
-                                    "LEFT JOIN " +
+                                    "LEFT JOIN machinestate s  " +
+                                    "ON m.serialkey = s.serialkey " +
+                                    "LEFT JOIN  " +
                                     "(SELECT temp.no, temp.serialkey, temp.licenseenddate, temp.licensetype " +
                                     "FROM (SELECT max(no) AS no FROM license GROUP BY serialkey) max " +
                                     "LEFT JOIN license temp ON temp.no = max.no) l " +
-                                    "ON m.serialkey = l.serialkey " +
+                                    "ON m.serialkey = l.serialkey  " +
                                     "WHERE 1=1 and (m.createDate > s.inputDate or m.createDate < s.inputDate) " +
                                     "ORDER BY m.createdate DESC " +
                                     "LIMIT #{limit} " +
@@ -62,5 +63,12 @@ public interface MachineMapper {
             "FROM machine")
     public int getMachineCount() throws Exception;
 
-
+    /**
+     * MachineMapper-05
+     * Get All Machine Count
+     */
+    @Select("SELECT coalesce(MAX(serialKey),'noSerialKey') as serialKey " +
+            "FROM machine " +
+            "WHERE model=#{modelCode}")
+    public String getMaxSerialKey(@Param("modelCode")String modelCode) throws Exception;
 }

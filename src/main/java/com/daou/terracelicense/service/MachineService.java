@@ -1,5 +1,7 @@
 package com.daou.terracelicense.service;
 
+import com.daou.terracelicense.domain.CodeControl;
+import com.daou.terracelicense.domain.CodeControlList;
 import com.daou.terracelicense.domain.Machine;
 import com.daou.terracelicense.domain.MachineList;
 import com.daou.terracelicense.mappers.AdminMapper;
@@ -13,6 +15,7 @@ import com.daou.terracelicense.util.PageManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,23 +34,59 @@ public class MachineService {
 
     public MachineList getMachineList(String page) throws Exception{
         MachineList machineList = new MachineList();
-        List<Machine> list;
+        CodeControlList codeControlList = new CodeControlList();
+        List<Machine> machines;
+        List<CodeControl> codeControls;
+
         int limit = PageManager.MACHINE_PAGE_LIMIT;
         int offset = PageManager.getOffsetByPage(page, limit);
         int machineCount;
 
         machineCount = machineMapper.getMachineCount();     // All Machine Count for pagination
-        list = machineMapper.getMachineList(offset, limit);
+        machines = machineMapper.getMachineList(offset, limit);
+        codeControls = codeControlMapper.getAllCodeControl();
 
-        machineList.setMachineList(list);
+        machineList.setMachineList(machines);
         ///// Pagination Info
         machineList.setMaxIndexNo(machineCount);
         machineList.setCurrentIndexPage(Integer.parseInt(page));    // Current Seleced Page
         ///// About Machine Info
-        setNameAndValueFromIdAndCode(machineList);
+        setNameAndValueFromIdAndCode(machineList, codeControls);
         MachineManager.setMachineNo(machineList);
 
         return machineList;
+    }
+
+    public CodeControlList getCodeControlList() throws Exception{
+        CodeControlList codeControlList = new CodeControlList();
+        List<CodeControl> modelAll, countryAll, stateAll, prefixAll, producerAll, deviceAll, programAll, virusAll;
+        List<Machine> serialNumberAll, clientCompanyAll, adminCompanyAll;
+
+        countryAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_COUNTRY);
+        stateAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_MACHINESTATE);
+        modelAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_MODEL);
+        prefixAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_PREFIX);
+        producerAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_PRODUCER);
+        deviceAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_THIRDDEVICE);
+        programAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_THIRDPROGRAM);
+        virusAll = codeControlMapper.getAllByCategory(CodeControlManager.CODE_CATEGORY_VIRUS);
+        serialNumberAll = getSerialInfo(modelAll);
+        clientCompanyAll = clientMapper.getClientCompanyList();
+        adminCompanyAll = adminMapper.getAdminCompanyList();
+
+        codeControlList.setCountryAll(countryAll);
+        codeControlList.setModelAll(modelAll);
+        codeControlList.setThirdDeviceAll(deviceAll);
+        codeControlList.setProducerAll(producerAll);
+        codeControlList.setThirdProgramAll(programAll);
+        codeControlList.setVirusAll(virusAll);
+        codeControlList.setPrefixAll(prefixAll);
+        codeControlList.setStateAll(stateAll);
+        codeControlList.setSerialNumberAll(serialNumberAll);
+        codeControlList.setClientCompanyAll(clientCompanyAll);
+        codeControlList.setAdminCompanyAll(adminCompanyAll);
+
+        return codeControlList;
     }
 
     public int addMachine(Machine machine) throws Exception{
@@ -62,7 +101,20 @@ public class MachineService {
         return result;
     }
 
-    public void setNameAndValueFromIdAndCode(MachineList machineList) throws Exception{
+    public String getValueByCode(List<CodeControl> codeControlList, String category, String code){
+        String value = "";
+        for(CodeControl codeControl : codeControlList){
+            if(category.equals(codeControl.getCategory())){
+                if(code.equals(codeControl.getCode())){
+                    value = codeControl.getValue();
+                    break;
+                }
+            }
+        }
+        return value;
+    }
+
+    public void setNameAndValueFromIdAndCode(MachineList machineList, List<CodeControl> codeControlList) throws Exception{
         for(Machine machine : machineList.getMachineList()){
             String adminId = machine.getAdminCompanyId();
             String clientId = machine.getClientCompanyId();
@@ -74,27 +126,67 @@ public class MachineService {
             if(!BaseUtil.stringNullOrEmpty(adminId) && !"noData".equals(adminId)){
                 adminName = adminMapper.getAdminCompanyNameById(adminId);
                 machine.setAdminCompanyName(adminName);
+            }else{
+                machine.setAdminCompanyName("");
             }
             if(!BaseUtil.stringNullOrEmpty(clientId) && !"noData".equals(clientId)){
                 clientName = clientMapper.getClientCompanyNameById(clientId);
                 machine.setClientCompanyName(clientName);
+            }else{
+                machine.setClientCompanyName("");
             }
             if(!BaseUtil.stringNullOrEmpty(countryCode)){
-                countryVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_COUNTRY, countryCode);
+                //countryVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_COUNTRY, countryCode);
+                countryVal = getValueByCode(codeControlList, CodeControlManager.CODE_CATEGORY_COUNTRY, countryCode);
                 machine.setCountryValue(countryVal);
+            }else{
+                machine.setCountryValue("");
             }
             if(!BaseUtil.stringNullOrEmpty(modelCode)){
-                modelVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_MODEL, modelCode);
+                //modelVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_MODEL, modelCode);
+                modelVal = getValueByCode(codeControlList, CodeControlManager.CODE_CATEGORY_MODEL, modelCode);
                 machine.setModelValue(modelVal);
+            }else{
+                machine.setModelValue("");
             }
             if(!BaseUtil.stringNullOrEmpty(stateCode)){
-                stateVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_MACHINESTATE, stateCode);
-                machine.setModelValue(stateVal);
+                //stateVal = codeControlMapper.getValueByCode(CodeControlManager.CODE_CATEGORY_MACHINESTATE, stateCode);
+                stateVal = getValueByCode(codeControlList, CodeControlManager.CODE_CATEGORY_MACHINESTATE, stateCode);
+                machine.setStateValue(stateVal);
+            }else{
+                machine.setStateValue("");
             }
         }
     }
-/*
-    public int deleteMachine(String id) throws Exception{
 
+    public List<Machine> getSerialInfo(List<CodeControl> modelAll) throws Exception{
+        String serialKey;
+        String snDefault = "000A-001";
+        List<Machine> serialNumberAll = new ArrayList<>();
+
+        for(CodeControl modelCodeCon : modelAll){
+            Machine machine = new Machine();
+            String modelValue = modelCodeCon.getValue();
+
+            serialKey = machineMapper.getMaxSerialKey(modelCodeCon.getCode());
+
+            if (!serialKey.equals("noSerialKey") && serialKey.substring(0, 6).equals(modelValue)) {
+                String sn = MachineManager.serialKeyAutoIncrement(serialKey);
+                machine.setModelValue(modelValue);
+                machine.setSerialNumber(sn);
+                machine.setSerialKey(modelValue + sn);
+            } else {
+                machine.setModelValue(modelValue);
+                machine.setSerialNumber(snDefault);
+                machine.setSerialKey(modelValue + snDefault);
+            }
+            serialNumberAll.add(machine);
+        }
+
+        return serialNumberAll;
+    }
+
+    /*
+        public int deleteMachine(String id) throws Exception{
     }*/
 }

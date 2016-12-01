@@ -1,5 +1,6 @@
 package com.daou.terracelicense.controller;
 
+import com.daou.terracelicense.domain.CodeControlList;
 import com.daou.terracelicense.domain.Machine;
 import com.daou.terracelicense.domain.MachineList;
 import com.daou.terracelicense.mappers.MachineMapper;
@@ -32,8 +33,8 @@ public class MachineController {
     @Autowired
     private MachineService machineService;
 
-    @RequestMapping(value = "/view", method = RequestMethod.GET)
-    public ModelAndView getMachineView(Model model){
+    @RequestMapping(value = "/view/list", method = RequestMethod.GET)
+    public ModelAndView getMachineListView(Model model){
         MachineList machineList = new MachineList();
         try{
             machineList = machineService.getMachineList("1");
@@ -42,6 +43,19 @@ public class MachineController {
         }
         ModelAndView mav = new ModelAndView("machine/list", model.asMap());
         mav.addObject("machineList", machineList);
+        return mav;
+    }
+
+    @RequestMapping(value = "/view/add", method = RequestMethod.GET)
+    public ModelAndView getMachineAddView(Model model){
+        CodeControlList codeControlList = new CodeControlList();
+        try{
+            codeControlList = machineService.getCodeControlList();
+        }catch (Exception e){
+            logger.error(ExceptionUtils.getStackTrace(e));
+        }
+        ModelAndView mav = new ModelAndView("machine/add", model.asMap());
+        mav.addObject("codeControlList", codeControlList);
         return mav;
     }
 

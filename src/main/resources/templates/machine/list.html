@@ -4,9 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Machine List</title>
 
-    <script src="/js/jquery-3.1.1.min.js" type="text/javascript"></script>
-    <script src="/uikit/js/uikit.min.js" type="text/javascript"></script>
-    <script src="/js/machine.js" type="text/javascript"></script>
+    <script src="/js/jquery-3.1.1.min.js"></script>
+    <script src="/uikit/js/uikit.min.js"></script>
+    <script src="/js/machine.js"></script>
 
     <link rel="stylesheet" href="/uikit/css/uikit.min.css"/>
     <link rel="stylesheet" href="/uikit/css/uikit.gradient.min.css"/>
@@ -16,95 +16,18 @@
         /*<![CDATA[*/
         var machineList;
         var page = 1;
-
         $(function(){
             machineList = /*[[${machineList}]]*/ null;
             if(machineList != null){
-                addRow(machineList);
+                addMachineRow(machineList);
                 pagination(machineList);
             }else{
                 $("#nodata").removeClass("uk-hidden");
                 $("#nextBtn").hide();
             }
+            setMenuOnclickListener("machine");
+            setAddButtonListener();
         });
-
-        /**
-         * Pagination
-         */
-        function pagination(data){
-            var curIndex = data.currentIndexPage;
-            var size = data.endPage - data.startPage + 1;
-            var listHtml = "";
-            $('#pagination').html('');
-            for(var i = 0; i < size; i++){
-                var index = data.startPage + i;
-                if(index == curIndex){
-                    listHtml = listHtml + "<li class='uk-active'><span>" + index + "</span></li>";
-                }else{
-                    listHtml = listHtml + "<li><a role='button' onclick='getList(" + index + ");'>" + index + "</a></li>";
-                }
-            }
-            $('#pagination').html(listHtml);
-        }
-
-        /**
-         * Attach Machine List Data
-         */
-        function addRow(data){
-            $("#nodata").addClass("uk-hidden");
-            $("#nextBtn").hide();
-            $("#loading").removeClass("uk-active");
-            $('#item_list').html("");
-            var list='';
-            $.each(data.machineList, function(i, item){
-                with(item){
-                    list+="<tr>"+
-                            "<td class='uk-text-center'>" + machineNo + "</td>"+
-                            "<td class='uk-text-center'>" + serialKey + "</td>"+
-                            "<td class='uk-text-center'>" + clientCompanyName + "</td>"+
-                            "<td class='uk-text-center'>" + stateValue + "</td>"+
-                            "<td class='uk-text-center'>" + adminCompanyName + "</td>"+
-                            "<td class='uk-text-center'>" + countryValue + "</td>"+
-                            "<td class='uk-text-center'>" + modelValue + "</td>"+
-                            "<td class='uk-text-center'>" + licenseEndDate + "</td>"+
-                            "<td class='uk-text-center'>" + "down" + "</td>" +
-                            '</tr>';
-                }
-            });
-            if (page==1 && (data.length == 0)) {
-                $("#nodata").removeClass("uk-hidden");
-                $("#nextBtn").hide();
-            } else {
-
-                $('#item_list').append(list);
-
-                if(data.length>=data.offset){
-                    $("#nextBtn").show()
-                }
-                $("#nodata").addClass("uk-hidden");
-            }
-            $("#loading").addClass("uk-hidden");
-        }
-
-        /**
-         * Get Machine List Data
-         */
-        function getList(page){
-            $.ajax({
-                type: "get",
-                cache: false,
-                url: "/machine/list?page="+page,
-                async: true,
-                success: function(data){
-                    console.log(data);
-                    pagination(data);
-                    addRow(data);
-                },
-                error: function(xhr,Textstatus,error) {
-                    alert(Textstatus);
-                }
-            });
-        }
         /*]]>*/
     </script>
 </head>
@@ -112,6 +35,11 @@
 <div th:include="header :: #header-navbar" class="uk-container uk-container-center uk-margin-top"></div>
 <div class="uk-container uk-container-center uk-margin-top">
     <ul class="uk-list uk-margin-top-remove">
+        <li class="uk-margin-small-top uk-margin-bottom">
+            <div class="uk-float-left">
+                <button class="uk-button uk-button-medium" type="button" id="add-button">ADD</button>
+            </div>
+        </li>
         <li>
             <div class="uk-overflow-container" id="table_area">
                 <table class="uk-table uk-table-middle" id="item_table">
@@ -151,11 +79,6 @@
         <li>
             <div id="nodata" class="uk-text-center uk-hidden">
                 등록된 자료가 없습니다.
-            </div>
-        </li>
-        <li class="uk-margin-small-top">
-            <div class="uk-float-right">
-                <button class="uk-button uk-button-large" type="button" id="nextBtn">더보기</button>
             </div>
         </li>
     </ul>
