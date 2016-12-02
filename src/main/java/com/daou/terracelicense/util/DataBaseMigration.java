@@ -414,12 +414,13 @@ public class DataBaseMigration {
     }
 
     public void setMachineStateTable() {
+        //mysqlPsmt = mysqlConn.prepareStatement("select * from machinestate");
         getInitSetting();
         try {
             int count = 0;
 
-            //mysqlPsmt = mysqlConn.prepareStatement("select * from (select * from MachineState order by inputDate desc) m group by m.serialKey");
-            mysqlPsmt = mysqlConn.prepareStatement("select * from machinestate");
+            mysqlPsmt = mysqlConn.prepareStatement("select * from (select * from MachineState order by inputDate desc) m group by m.serialKey");
+
             rs = mysqlPsmt.executeQuery();
 
             while (rs.next()) {
@@ -486,7 +487,6 @@ public class DataBaseMigration {
                 rs = mysqlPsmt.executeQuery();
 
                 while(rs.next()) {
-                    System.out.println("Insert start - line : " + count++);
                     try {
                         ResultSet condition;
                         mysqlPsmt = mysqlConn.prepareStatement("select max(licenseStartDate) from License where serialKey = ?");

@@ -19,7 +19,7 @@ public class MachineManager {
         return machineManager;
     }
 
-    public void setMachineNo(MachineList machineList){
+    public void setMachineDisplayNo(MachineList machineList){
         ArrayList<Machine> list = (ArrayList)machineList.getMachineList();
         int machineCount = machineList.getMaxIndexNo();
         int currentIndex = machineList.getCurrentIndexPage();

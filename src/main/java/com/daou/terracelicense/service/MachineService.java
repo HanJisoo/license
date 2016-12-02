@@ -52,7 +52,7 @@ public class MachineService {
         machineList.setCurrentIndexPage(Integer.parseInt(page));    // Current Seleced Page
         ///// About Machine Info
         setNameAndValueFromIdAndCode(machineList, codeControls);
-        manager.setMachineNo(machineList);
+        manager.setMachineDisplayNo(machineList);
 
         return machineList;
     }
